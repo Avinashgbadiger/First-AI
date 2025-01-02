@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -20,8 +21,11 @@ public class GenAIController {
     @Autowired
     ImageService imageService;
 
-    public GenAIController(ChatService chatService) {
+    private final RecipeService recipeService;
+
+    public GenAIController(ChatService chatService, RecipeService recipeService) {
         this.chatService = chatService;
+        this.recipeService = recipeService;
     }
 
     @GetMapping("ask-ai")
@@ -56,6 +60,15 @@ public class GenAIController {
         return imageResponse.getResults().stream()
                 .map(result -> result.getOutput().getUrl())
                 .toList();
+    }
+
+
+    @GetMapping("recipe-creator")
+    public String recipeCreator(@RequestParam String ingredients,
+                                @RequestParam(defaultValue = "any") String cuisine,
+                                @RequestParam(defaultValue = "") String dietaryRestriction) {
+
+        return recipeService.createRecipe(ingredients, cuisine, dietaryRestriction);
     }
 
 
